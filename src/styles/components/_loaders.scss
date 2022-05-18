@@ -1,0 +1,29 @@
+.chicken-loader {
+	width: fit-content;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+
+	&__image div {
+		display: inline-block;
+		width: 85px;
+		height: 100px;
+		background: url('../../../public/assets/collect-eggs/chickens.png');
+		animation: chicken-sprite 1s steps(2) infinite;
+	}
+
+	& span {
+		font-family: Retron-2000;
+		font-size: 2rem;
+	}
+}
+
+@keyframes chicken-sprite {
+	from {
+		background-position: 0px;
+	}
+	to {
+		background-position: 170px;
+	}
+}

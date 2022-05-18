@@ -1,0 +1,56 @@
+.header {
+	background-color: white;
+	display: flex;
+	position: relative;
+	box-shadow: 0.25rem 0 0.5rem 0.25rem rgba(black, 0.05);
+	padding: 0.75rem 2rem;
+	height: auto;
+
+	&-links {
+		font-family: Montserrat, sans-serif;
+		display: flex;
+		flex: 1 1 auto;
+		justify-content: flex-end;
+		margin-right: 1rem;
+
+		& button {
+			@include navigation-button;
+			height: 100%;
+
+			&:hover {
+				color: black;
+				background-color: rgba(black, 0.05);
+			}
+
+			&:focus {
+				color: black;
+			}
+		}
+
+		&-menu button {
+			display: flex;
+			align-items: center;
+			padding: 2rem 1.25rem;
+			@include navigation-button;
+		}
+	}
+
+	&-menu {
+		&-item.ant-menu-item {
+			&-active button,
+			&-selected button {
+				color: black !important;
+			}
+		}
+
+		&-btn {
+			@include navigation-button;
+			font-weight: normal;
+			font-size: 0.9rem;
+		}
+	}
+}
+
+.ant-menu-sub.ant-menu-inline > .ant-menu-item {
+	padding-left: 0 !important;
+}

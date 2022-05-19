@@ -7,35 +7,19 @@ class InstructionScene extends BaseScene {
 		this.currentLevel = 1
 		this.levels = {
 			0: {
-				insPaths: [
-					['ins_1-1', 'ins_1-2'],
-					['ins_1-3', 'ins_1-4'],
-					['ins_1-5', 'ins_1-6']
-				],
+				insPaths: [[]],
 				insTexts: [
 					[
-						'Nhiệm vụ của bạn là hứng các quả trứng có kiểu',
-						'biến trùng với kiểu trên hũ, sử dụng hai nút mũi',
-						'tên ← và →. Nếu hứng trượt những quả trứng này,',
-						'bạn sẽ bị mất đi một mạng',
-						'Khi bạn hứng đúng quả trứng cần hứng, bạn sẽ',
-						'nhận được một quả trứng vàng.'
-					],
-					[
-						'Bạn cần phải tránh các quả trứng có kiểu biến',
-						'khác với kiểu trên hũ.',
-						'Nếu hứng sai quả trứng, bạn sẽ nhận được một quả',
-						'trứng xấu và sẽ bị mất đi một mạng'
-					],
-					[
-						'Bạn khởi đầu màn chơi với 3 mạng, tương ứng với',
-						'3 trái tim. Khi thời gian kết thúc, nếu bạn còn',
-						'ít nhất 1 trái tim, bạn sẽ chiến thắng.',
-						'Ngược lại, bạn sẽ thua khi không còn mạng nào.',
+						'Nhiệm vụ bạn: tìm lối thoát ra khỏi mê cung',
 						'',
-						'                                   <CHÚ Ý>:',
-						'Kiểu biến trên hũ sẽ thay đổi trong quá',
-						'trình chơi nên hãy cẩn thận để không bị mất mạng.'
+						'Trong lúc đi tìm lối thoát, bạn sẽ gặp những câu hỏi',
+						'ngẫu nhiên. Nếu bạn trả lời đúng thì sẽ được',
+						'tăng thời gian chơi. Nếu trả lời sai, bạn sẽ giảm bớt',
+						'thời gian chơi. Nếu bạn không trả lời thì sẽ không',
+						'được phép chơi tiếp.',
+						'',
+						'Lưu ý thời gian giải mê cung luôn đếm ngược',
+						'và không dừng lại cho dù người chơi đang gặp câu hỏi'
 					]
 				]
 			}
@@ -45,21 +29,23 @@ class InstructionScene extends BaseScene {
 			1: {
 				insPaths: this.levels[0].insPaths.concat([[]]),
 				insTexts: this.levels[0].insTexts.concat([
-					[
-						'int - integer: kiểu số nguyên, các số không',
-						'có phần thập phân. Ví dụ: 1, 123, 54, 956, 3749',
-						'',
-						'float: kiểu số thực, các số có thể có phần thập phân.',
-						'Để đơn giản, các quả trứng kiểu float sẽ luôn có',
-						'phần thập phân. Ví dụ: 11.31, 234.12, 1.23',
-						'',
-						'bool - boolean: kiểu đúng/sai. Trứng kiểu bool chỉ',
-						'nhận 2 giá trị: true - đúng, false - sai.'
-					]
+					['Màn chơi đầu tiên là mê cung 10x10.', 'Bạn sẽ có 45 giây để thoát khỏi mê cung này']
 				])
 			},
-			2: { insPaths: [], insTexts: [] },
-			3: { insPaths: [], insTexts: [] }
+			2: {
+				insPaths: [[]],
+				insTexts: [['Màn chơi thứ hai là mê cung 15x15.', 'Thời gian cho bạn thoát khỏi mê cung là 1 phút']]
+			},
+			3: {
+				insPaths: [[]],
+				insTexts: [
+					[
+						'Màn chơi cuối cùng là mê cung 20x20.',
+						'Đây là màn chơi khó khăn nhất.',
+						'Bạn sẽ có 2 phút để chinh phục màn chơi này'
+					]
+				]
+			}
 		})
 
 		this.insGroups = []

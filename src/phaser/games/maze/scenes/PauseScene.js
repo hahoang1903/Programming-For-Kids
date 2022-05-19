@@ -4,27 +4,27 @@ class PauseScene extends BaseScene {
 	constructor() {
 		super('PauseScene')
 		this.level = 1
+		this.resumeBtnPos = null
+		this.restartBtnPos = null
+		this.quitBtnPos = null
 	}
 
-	init({ level }) {
+	init({ level, resumeBtnPos, restartBtnPos, quitBtnPos }) {
 		this.level = level
+		this.resumeBtnPos = resumeBtnPos
+		this.restartBtnPos = restartBtnPos
+		this.quitBtnPos = quitBtnPos
 	}
 
 	create() {
-		this.createBoard()
 		this.createMenu()
 	}
 
-	createBoard() {
-		this.cameras.main.setBackgroundColor('rgba(0, 0, 0, 0.2)')
-		this.add.image(this.center.x, this.center.y, 'woodBoard').setOrigin(0.5).setDisplaySize(250, 350)
-	}
-
 	createMenu() {
-		const scale = 1.5
+		const scale = 1.2
 
 		const resumeBtn = this.add
-			.image(this.center.x, 180, 'greenPlayBtnBig')
+			.image(this.restartBtnPos.x, this.resumeBtnPos.y, 'playBtn')
 			.setOrigin(0.5)
 			.setScale(scale)
 			.setInteractive({ cursor: 'pointer' })
@@ -35,7 +35,7 @@ class PauseScene extends BaseScene {
 			})
 
 		const restartBtn = this.add
-			.image(this.center.x, 280, 'restartBtnBig')
+			.image(this.restartBtnPos.x, this.restartBtnPos.y, 'restartBtn')
 			.setOrigin(0.5)
 			.setScale(scale)
 			.setInteractive({ cursor: 'pointer' })
@@ -46,7 +46,7 @@ class PauseScene extends BaseScene {
 			})
 
 		const quitBtn = this.add
-			.image(this.center.x, 380, 'quitBtnBig')
+			.image(this.quitBtnPos.x, this.quitBtnPos.y, 'quitBtn')
 			.setOrigin(0.5)
 			.setScale(scale)
 			.setInteractive({ cursor: 'pointer' })

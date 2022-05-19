@@ -58,8 +58,32 @@ class InstructionScene extends BaseScene {
 					]
 				])
 			},
-			2: { insPaths: [], insTexts: [] },
-			3: { insPaths: [], insTexts: [] }
+			2: {
+				insPaths: [[]],
+				insTexts: [
+					[
+						'char - character: là các ký tự đơn bao gồm chữ cái',
+						'và các ký tự đặc biệt. Để đơn giản, char trong',
+						'trò chơi này sẽ chỉ bao gồm các chữ cái đơn.',
+						'Ví dụ a, b, c',
+						'',
+						'string: là một chuỗi các ký tự, chuỗi các char.',
+						'Ví dụ: dasjf, fdskfj',
+						'Lưu ý, một ký tự cũng được coi là string với độ dài',
+						'chuỗi bằng 1.'
+					]
+				]
+			},
+			3: {
+				insPaths: [[]],
+				insTexts: [
+					[
+						'Đây là màn chơi tổng hợp. Tất cả các kiểu biến',
+						'đã xuất hiện trong các màn chơi trước đều sẽ',
+						'xuất hiện trong màn chơi này.'
+					]
+				]
+			}
 		})
 
 		this.insGroups = []

@@ -26,9 +26,7 @@ class PreloadScene extends Phaser.Scene {
 		this.load.image('goldenPot', '/assets/collect-eggs/goldenPot.png')
 		this.load.image('brokenEgg', '/assets/collect-eggs/brokenEgg.png')
 		this.load.image('normalEgg', '/assets/collect-eggs/normalEgg.png')
-		this.load.image('woodBoard', '/assets/collect-eggs/woodBoard.png')
 		this.load.image('blankBtn', '/assets/collect-eggs/blankBtn.png')
-		this.load.image('heart', '/assets/collect-eggs/heart.png')
 		this.load.image('backBtn', '/assets/collect-eggs/backBtn.png')
 		this.load.image('nextBtn', '/assets/collect-eggs/nextBtn.png')
 		this.load.image('restartBtn', '/assets/collect-eggs/restartBtn.png')
@@ -45,6 +43,9 @@ class PreloadScene extends Phaser.Scene {
 		this.load.image('ins_1-4', '/assets/collect-eggs/ins_1-4.png')
 		this.load.image('ins_1-5', '/assets/collect-eggs/ins_1-5.png')
 		this.load.image('ins_1-6', '/assets/collect-eggs/ins_1-6.png')
+		this.load.image('heart', '/assets/collect-eggs/heart.png')
+
+		this.load.image('woodBoard', '/assets/general/woodBoard.png')
 
 		this.load.audio('chicken-music', '/assets/collect-eggs/chicken-music.mp3')
 	}

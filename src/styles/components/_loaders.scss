@@ -1,21 +1,37 @@
-.chicken-loader {
+.loader {
 	width: fit-content;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
 
-	&__image div {
-		display: inline-block;
-		width: 85px;
-		height: 100px;
-		background: url('../../../public/assets/collect-eggs/chickens.png');
-		animation: chicken-sprite 1s steps(2) infinite;
+	&--chicken {
+		&__image div {
+			display: inline-block;
+			width: 85px;
+			height: 100px;
+			background: url('../../../public/assets/collect-eggs/chickens.png');
+			animation: chicken-sprite 1s steps(2) infinite;
+		}
+
+		& span {
+			font-family: Retron-2000;
+			font-size: 2rem;
+		}
 	}
 
-	& span {
-		font-family: Retron-2000;
-		font-size: 2rem;
+	&--maze {
+		&__image {
+			width: 250px;
+			height: 250px;
+			background: url('../../../public/assets/maze/mazes.png');
+			animation: maze-sprite 2.5s ease-in-out infinite;
+		}
+
+		& span {
+			font-family: Retron-2000;
+			font-size: 2rem;
+		}
 	}
 }
 
@@ -25,5 +41,34 @@
 	}
 	to {
 		background-position: 170px;
+	}
+}
+
+@keyframes maze-sprite {
+	0% {
+		background-position: 0px;
+		opacity: 1;
+	}
+	10% {
+		opacity: 0;
+	}
+	33% {
+		background-position: 250px;
+		opacity: 1;
+	}
+	43% {
+		opacity: 0;
+	}
+	66% {
+		background-position: 500px;
+		opacity: 1;
+	}
+	76% {
+		opacity: 0;
+	}
+
+	100% {
+		background-position: 750px;
+		opacity: 1;
 	}
 }

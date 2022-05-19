@@ -1,5 +1,5 @@
-import Phaser from 'phaser'
 import BaseScene from './BaseScene'
+import generate from 'generate-maze'
 
 class PlayScene extends BaseScene {
 	constructor() {
@@ -8,88 +8,172 @@ class PlayScene extends BaseScene {
 		this.currentLevel = 1
 		this.levels = {
 			1: {
-				numberOfChickens: 4,
-				chickensMoving: false,
-				potSpeed: 6.5,
-				eggGravity: 50,
-				eggSpawnTimeGapRange: [1500, 3500],
-				potVariables: ['int', 'float', 'bool'],
-				potVarChangeRange: [10000, 12500],
-				timeLeft: 30000
-			},
-			2: {
-				numberOfChickens: 5,
-				chickensMoving: false,
-				potSpeed: 7.25,
-				eggGravity: 60,
-				eggSpawnTimeGapRange: [1200, 3000],
-				potVariables: ['string', 'char'],
-				potVarChangeRange: [8000, 9500],
+				size: 10,
+				wallSize: { length: 40, width: 8 },
+				popUpQuestionRage: [6200, 7000],
 				timeLeft: 45000
 			},
-			3: {
-				numberOfChickens: 2,
-				chickensMoving: true,
-				chickenSpeed: 450,
-				potSpeed: 7.5,
-				eggGravity: 62,
-				eggSpawnTimeGapRange: [850, 2500],
-				potVariables: ['int', 'char', 'float', 'bool', 'string'],
-				potVarChangeRange: [6500, 7800],
+			2: {
+				size: 15,
+				wallSize: { length: 30, width: 5 },
+				popUpQuestionRage: [7500, 9000],
 				timeLeft: 60000
+			},
+			3: {
+				size: 20,
+				wallSize: { length: 22, width: 3 },
+				popUpQuestionRage: [11500, 14500],
+				timeLeft: 120000
 			}
 		}
-
-		this.chickens = []
-		this.chickenPosY = this.config.height / 6
-
-		this.pot = null
-		this.potVariable = null
-		this.potVarChangeTimePassed = 0
-		this.potVarChangeTimeGap = 0
-		this.potResultDisplayTimePassed = 0
-		this.potDisplayingResult = false
 
 		this.cursorKeys = null
 
 		this.startDelay = 5
 		this.delayTextTimePassed = 0
 		this.delayText = null
-
 		this.doneDelay = false
 
-		this.eggs = []
-		this.eggSpawnTimePassed = 0
-		this.eggSpawnTimeGap = 0
-
 		this.lives = []
-		this.overlaps = []
 
 		this.timeLeft = this.levels[this.currentLevel].timeLeft
 		this.timeLeftText = null
 
 		this.showIns = true
+
+		this.player = null
+
+		const { length, width } = this.levels[this.currentLevel].wallSize
+		this.playerSize = length - width - 4
+
+		this.maze = null
+
+		this.pauseBtn = null
+		this.restartBtn = null
+		this.quitBtn = null
+		this.menuExpandWidth = 100
+
+		this.questions = [
+			{
+				text: [
+					'Một Cửa hàng có chương trình khuyến mãi',
+					'mua 1 tặng 1 chai nước hoa đối với khách hàng',
+					'mua nhiều hơn hoặc bằng 10 sản phẩm.',
+					'Hùng mua 2 chai nước, 1 thùng coca, 1 gói bim bim,',
+					'3 cuộn giấy ăn. Hùng sẽ nhận được gì?'
+				],
+				options: ['A. Thêm 1 chai nước hoa.', 'B. Không nhận được gì cả', 'C. Nhận được thêm tiền'],
+				answer: 1
+			},
+			{
+				text: [
+					'Có 3 loại đồ vật đặt được phân biệt theo 3 màu ',
+					'đỏ là đồ dùng cho công việc',
+					'trắng là đồ nhà bếp',
+					'đen là đồ dùng để quét dọn',
+					'Có một cái chổi trong đó. Vậy nó màu gì ?'
+				],
+				options: ['A. Đỏ', 'B. Trắng', 'C. Đen'],
+				answer: 2
+			},
+			{
+				text: [
+					'Động vật đẻ con thì là động vật có vú',
+					'nếu không sẽ là động vật không có vú',
+					'Gà là động vật gì ?'
+				],
+				options: ['A. Động vật có vú', 'B. Động vật không có vú', 'C. Không phải 2 loại trên'],
+				answer: 1
+			},
+			{
+				text: [
+					'Trong rừng có nhiều loại nấm',
+					'Nấm có nhiều hơn hoặc bằng 3 màu thì sẽ là nấm độc',
+					'Nấm có 2 màu thì là nấm mốc',
+					'Nấm có 1 màu thì sẽ là ăn được',
+					'Một cây nấm có màu đen và trắng. Đó là loại nấm gì ?'
+				],
+				options: ['A. Độc', 'B. Mốc', 'C. Ăn được'],
+				answer: 1
+			},
+			{
+				text: [
+					'Ở một khu vui chơi giải trí thể thao mạo hiểm',
+					'không cho phép người khuyết tật được vào để đảm bảo an toàn',
+					'Phi bị cận, Phi sẽ được ?'
+				],
+				options: ['A. Cho vào', 'B. Không cho vào', 'C. Đuổi về'],
+				answer: 0
+			},
+			{
+				text: [
+					'Động vật ăn động vật khác gọi là động vật ăn thịt',
+					'còn nếu ăn thực vật thì sẽ là ăn cỏ',
+					'ăn cả hai thì sẽ là động vật ăn tạp',
+					'Con người là động vật ăn ?'
+				],
+				options: ['A. Ăn thịt', 'B. Ăn cỏ', 'C. Ăn tạp'],
+				answer: 2
+			},
+			{
+				text: [
+					'Ở năm 2008, Iron Man là bộ phim C13',
+					'nghĩa là chỉ dành cho những người trên 13 tuổi',
+					'Quốc sinh năm 1995',
+					'Quốc có được xem bộ phim đó không ?'
+				],
+				options: [
+					'A. Có',
+					'B. Không, Quốc phải đợi thêm 1 năm nữa',
+					'C. Không, Quốc phải đợi thêm 3 năm nữa'
+				],
+				answer: 2
+			},
+			{
+				text: [
+					'Nhà nước quy định ai nhiều hơn hoặc bằng 80 tuổi',
+					'thì sẽ được tham gia vào hội những người cao tuổi của đất nước',
+					'Ông Quý sinh năm 1967, năm nay là năm 2022',
+					'Vậy ông Quý có được phép tham gia vào hội người cao tuổi ?'
+				],
+				options: ['A. Không', 'B. Có', 'C. Ông Quý quá già để tham gia hội người cao tuổi'],
+				answer: 0
+			},
+			{
+				text: [
+					'Sinh ra từ năm 1997 đến 2012 sẽ được gọi là gen Z',
+					'Sinh ra từ năm 1981 đến 1996 thì sẽ được gọi là gen Y',
+					'Sinh ra từ năm 1965 đến 1980 sẽ được gọi là gen X',
+					'Năm nay là năm 2022, Phi đã 35 tuổi thì Phi sẽ được gọi là ?'
+				],
+				options: ['A. Gen Z', 'B. Gen Y', 'C. Gen X'],
+				answer: 1
+			}
+		]
+		this.questionTimePassed = 0
+		this.questionTimeGap = 0
+		this.answering = false
 	}
 
 	init({ level, showIns = true }) {
 		this.currentLevel = level
 		this.showIns = showIns
 
-		this.overlaps = []
-		this.eggs = []
-		this.eggSpawnTimePassed = 0
-		this.eggSpawnTimeGap = 0
+		this.questionTimeGap = Phaser.Math.Between(...this.levels[this.currentLevel].popUpQuestionRage)
+		this.questionTimePassed = 0
+		this.answering = false
 	}
 
 	create() {
 		this.createBackground()
-		this.createChickens()
-		this.createPot()
 		this.createCursorKeys()
+		this.createMaze()
+		this.createPlayer()
+		this.createCollider()
 		this.createTimeText()
 		this.createEventsHandler()
 		this.createFunctionBtns()
-		this.createLives()
+		this.createMenu()
 		this.createDelayText()
 
 		if (this.showIns) {
@@ -99,20 +183,189 @@ class PlayScene extends BaseScene {
 
 	update(time, delta) {
 		if (this.doneDelay) {
-			this.physics.resume()
+			if (!this.answering) {
+				this.physics.resume()
+			}
 
 			this.updateTimeText(delta)
-			this.updatePot(delta)
-
-			this.updateChickens()
-			this.createEgg(delta)
-			this.updateEggs(delta)
-			this.removeUnusedEggs()
-
+			this.updatePlayer()
+			this.checkOpenMenu()
+			this.createQuestion(delta)
 			this.checkGameStatus()
 		} else {
 			this.updateDelayText(delta)
 		}
+	}
+
+	createQuestion(delta) {
+		if (this.answering) {
+			return
+		}
+
+		this.questionTimePassed += delta
+
+		if (this.questionTimePassed >= this.questionTimeGap) {
+			const { popUpQuestionRage } = this.levels[this.currentLevel]
+
+			this.questionTimePassed = 0
+			this.questionTimeGap = Phaser.Math.Between(...popUpQuestionRage)
+
+			this.answering = true
+			this.physics.pause()
+
+			const leftAlignX = 240
+			const question = this.getRandomItem(this.questions)
+
+			const questionBoard = this.add.group()
+
+			questionBoard.add(
+				this.add
+					.image(leftAlignX - 60, 10, 'woodBoard')
+					.setOrigin(0)
+					.setDisplaySize(630, 400)
+			)
+
+			question.text.forEach((line, i) => {
+				questionBoard.add(
+					this.add.text(leftAlignX, 50 + i * 30, line, {
+						font: `20px Retron-2000`,
+						fill: '#fff',
+						align: 'left'
+					})
+				)
+			})
+
+			question.options.forEach((option, i) => {
+				const optionText = this.add
+					.text(leftAlignX, 50 + (question.text.length - 1) * 30 + 100 + i * 30, option, {
+						font: `20px Retron-2000`,
+						fill: '#fff',
+						align: 'left'
+					})
+					.setInteractive({ cursor: 'pointer' })
+					.on('pointerup', () => {
+						if (i == question.answer) {
+							this.timeLeft += 5000
+						} else {
+							this.timeLeft -= 10000
+						}
+
+						questionBoard.setVisible(false)
+						this.answering = false
+					})
+					.on('pointerover', () => optionText.setColor('#f7ec6e'))
+					.on('pointerout', () => optionText.setColor('#fff'))
+				questionBoard.add(optionText)
+			})
+		}
+	}
+
+	createMaze() {
+		const { size, wallSize } = this.levels[this.currentLevel]
+
+		const cells = generate(size, size, true, Phaser.Math.Between(0, 1000000000))
+		cells[size - 1][Math.floor(size / 2)].bottom = false
+
+		const totalWidth = wallSize.length * size + wallSize.width
+		const marginLeft = (this.config.width - totalWidth) / 2
+		const marginTop = (this.config.height - totalWidth) / 2
+
+		this.maze = this.add.group()
+		cells.forEach(row => {
+			row.forEach(cell => {
+				if (cell.top) {
+					const line = this.add
+						.rectangle(
+							marginLeft + cell.x * wallSize.length,
+							marginTop + cell.y * wallSize.length,
+							wallSize.length + wallSize.width,
+							wallSize.width,
+							0xffffff
+						)
+						.setOrigin(0)
+					this.maze.add(line)
+					this.physics.add.existing(line)
+					line.body.setImmovable(true)
+				}
+
+				if (cell.bottom) {
+					const line = this.add
+						.rectangle(
+							marginLeft + cell.x * wallSize.length,
+							marginTop + (cell.y + 1) * wallSize.length,
+							wallSize.length + wallSize.width,
+							wallSize.width,
+							0xffffff
+						)
+						.setOrigin(0)
+					this.maze.add(line)
+					this.physics.add.existing(line)
+					line.body.setImmovable(true)
+				}
+
+				if (cell.left) {
+					const line = this.add
+						.rectangle(
+							marginLeft + cell.x * wallSize.length,
+							marginTop + cell.y * wallSize.length,
+							wallSize.width,
+							wallSize.length + wallSize.width,
+							0xffffff
+						)
+						.setOrigin(0)
+					this.maze.add(line)
+					this.physics.add.existing(line)
+					line.body.setImmovable(true)
+				}
+
+				if (cell.right) {
+					const line = this.add
+						.rectangle(
+							marginLeft + (cell.x + 1) * wallSize.length,
+							marginTop + cell.y * wallSize.length,
+							wallSize.width,
+							wallSize.length + wallSize.width,
+							0xffffff
+						)
+						.setOrigin(0)
+					this.maze.add(line)
+					this.physics.add.existing(line)
+					line.body.setImmovable(true)
+				}
+			})
+		})
+	}
+
+	createPlayer() {
+		const { size, wallSize } = this.levels[this.currentLevel]
+		this.playerSize = wallSize.length - wallSize.width - 4
+
+		const totalWidth = wallSize.length * size + wallSize.width
+		const marginLeft = (this.config.width - totalWidth) / 2
+		const marginTop = (this.config.height - totalWidth) / 2
+
+		const playerOri = 40
+
+		this.anims.create({
+			key: 'eat',
+			frames: this.anims.generateFrameNumbers('player', { start: 0, end: 2 }),
+			frameRate: 6,
+			repeat: -1
+		})
+
+		this.player = this.physics.add
+			.sprite(
+				marginLeft + wallSize.length * Math.floor(size / 2) + wallSize.width + this.playerSize / 2,
+				marginTop + wallSize.width + this.playerSize / 2,
+				'player'
+			)
+			.setOrigin(0.5)
+			.setScale(this.playerSize / playerOri)
+			.play('eat')
+	}
+
+	createCollider() {
+		this.physics.add.collider(this.maze, this.player)
 	}
 
 	createTimeText() {
@@ -127,28 +380,8 @@ class PlayScene extends BaseScene {
 			.setOrigin(0.5, 0)
 	}
 
-	createChickens() {
-		this.chickens = []
-
-		this.anims.create({
-			key: 'fly',
-			frames: this.anims.generateFrameNumbers('chicken', { start: 2, end: 7 }),
-			frameRate: 6,
-			repeat: -1
-		})
-
-		const { numberOfChickens } = this.levels[this.currentLevel]
-		const spaceBetweenChickens = this.config.width / numberOfChickens
-		const baseX = spaceBetweenChickens / 2
-		for (let i = 0; i < numberOfChickens; i++) {
-			this.chickens.push(
-				this.physics.add.sprite(baseX + spaceBetweenChickens * i, this.chickenPosY, 'chicken').play('fly')
-			)
-		}
-	}
-
 	createBackground() {
-		this.add.image(0, 0, 'playBg').setOrigin(0)
+		this.add.image(0, 0, `mazeBg${this.currentLevel}`).setOrigin(0)
 	}
 
 	createFunctionBtns() {
@@ -156,21 +389,9 @@ class PlayScene extends BaseScene {
 		const scale = 0.65
 		const y = 10
 
-		const pauseBtn = this.add
-			.image(this.config.width - 10, y, 'pauseBtn')
-			.setOrigin(...origin)
-			.setScale(scale)
-			.setInteractive({ cursor: 'pointer' })
-			.on('pointerover', () => pauseBtn.setScale(1.1 * scale))
-			.on('pointerout', () => pauseBtn.setScale(scale))
-			.on('pointerup', () => {
-				this.physics.pause()
-				this.scene.pause().launch('PauseScene', { level: this.currentLevel })
-			})
-
 		const preloadScene = this.scene.get('PreloadScene')
 		const volumeBtn = this.add
-			.image(this.config.width - 50, y, preloadScene.isMusicPlaying() ? 'volumeBtn' : 'mutedVolumeBtn')
+			.image(this.config.width - 10, y, preloadScene.isMusicPlaying() ? 'volumeBtn' : 'mutedVolumeBtn')
 			.setOrigin(...origin)
 			.setScale(scale)
 			.setInteractive({ cursor: 'pointer' })
@@ -186,7 +407,7 @@ class PlayScene extends BaseScene {
 			})
 
 		const infoBtn = this.add
-			.image(this.config.width - 90, y, 'infoBtn')
+			.image(this.config.width - 50, y, 'infoBtn')
 			.setOrigin(...origin)
 			.setScale(scale)
 			.setInteractive({ cursor: 'pointer' })
@@ -197,69 +418,47 @@ class PlayScene extends BaseScene {
 			})
 	}
 
-	createPot() {
-		this.potVarChangeTimePassed = 0
-		this.potVarChangeTimeGap = 0
-		this.potResultDisplayTimePassed = 0
-		this.potDisplayingResult = false
+	createMenu() {
+		const scale = 1.2
 
-		this.pot = this.physics.add.image(this.center.x, this.config.height - 20, 'emptyPot').setOrigin(0.5, 1)
-
-		this.potVariable = this.add
-			.text(this.pot.getBounds().centerX, this.pot.getBounds().centerY + 10, null, {
-				font: '22.5px Retron-2000',
-				fill: '#000',
-				align: 'center'
-			})
+		this.pauseBtn = this.physics.add
+			.image(this.config.width, 180, 'pauseBtn')
 			.setOrigin(0.5)
-	}
-
-	createEgg(delta) {
-		this.eggSpawnTimePassed += delta
-
-		if (this.eggSpawnTimePassed >= this.eggSpawnTimeGap) {
-			const { eggSpawnTimeGapRange, eggGravity } = this.levels[this.currentLevel]
-
-			this.eggSpawnTimePassed = 0
-			this.eggSpawnTimeGap = Phaser.Math.Between(...eggSpawnTimeGapRange)
-
-			const randomX = this.getRandomItem(this.chickens).body.x
-
-			const egg = this.physics.add
-				.sprite(randomX, this.chickenPosY + 110, 'normalEgg')
-				.setOrigin(0, 1)
-				.setScale(0.7)
-
-			egg.body.gravity.y = eggGravity
-
-			const { content, type, size } = this.getEggValue()
-			const text = this.add
-				.text(egg.getCenter().x, egg.getCenter().y, content, {
-					font: `${size}px Retron-2000`,
-					fill: '#000',
-					align: 'center'
+			.setScale(scale)
+			.setInteractive({ cursor: 'pointer' })
+			.on('pointerover', () => this.pauseBtn.setScale(1.1 * scale))
+			.on('pointerout', () => this.pauseBtn.setScale(scale))
+			.on('pointerup', () => {
+				this.physics.pause()
+				this.scene.pause().launch('PauseScene', {
+					level: this.currentLevel,
+					resumeBtnPos: { x: this.pauseBtn.getBounds().centerX, y: this.pauseBtn.getBounds().centerY },
+					restartBtnPos: { x: this.restartBtn.getBounds().centerX, y: this.restartBtn.getBounds().centerY },
+					quitBtnPos: { x: this.quitBtn.getBounds().centerX, y: this.quitBtn.getBounds().centerY }
 				})
-				.setOrigin(0.5)
-			const eggText = { text, type }
-
-			const currentLength = this.eggs.length
-			const overlap = this.physics.add.overlap(egg, this.pot, () => {
-				this.markEggForRemove(currentLength, 0, overlap)
-
-				if (this.potVariable.text == type || (this.potVariable.text == 'string' && type == 'char')) {
-					this.pot.setTexture('goldenPot').setScale(0.92)
-				} else {
-					this.lives.pop()?.destroy()
-					this.pot.setTexture('evilPot').setScale(0.92)
-				}
-				this.potDisplayingResult = true
-				this.potResultDisplayTimePassed = 0
-				this.overlaps.forEach(ol => (ol.active = false))
 			})
-			this.overlaps.push(overlap)
 
-			this.eggs.push({ egg, eggText, overlap, timePassed: 0, markedForRemove: false, timeNeedToRemove: null })
-		}
+		this.restartBtn = this.physics.add
+			.image(this.config.width, 280, 'restartBtn')
+			.setOrigin(0.5)
+			.setScale(scale)
+			.setInteractive({ cursor: 'pointer' })
+			.on('pointerover', () => this.restartBtn.setScale(1.1 * scale))
+			.on('pointerout', () => this.restartBtn.setScale(scale))
+			.on('pointerup', () => {
+				this.scene.restart({ level: this.currentLevel, showIns: false })
+			})
+
+		this.quitBtn = this.physics.add
+			.image(this.config.width, 380, 'quitBtn')
+			.setOrigin(0.5)
+			.setScale(scale)
+			.setInteractive({ cursor: 'pointer' })
+			.on('pointerover', () => this.quitBtn.setScale(1.1 * scale))
+			.on('pointerout', () => this.quitBtn.setScale(scale))
+			.on('pointerup', () => {
+				this.scene.start('MenuScene')
+			})
 	}
 
 	createCursorKeys() {
@@ -286,21 +485,28 @@ class PlayScene extends BaseScene {
 		this.events.on('resume', () => this.createDelayText())
 	}
 
-	createLives() {
-		this.lives = []
+	updatePlayer() {
+		const playerSpeed = 100
+		this.player.setVelocity(0)
 
-		// this.add.text(220, 10, 'Mạng:', {
-		// 	font: `25px Retron-2000`,
-		// 	fill: '#fff',
-		// 	align: 'center'
-		// })
-		for (let i = 0; i < 3; i++) {
-			this.lives.push(
-				this.add
-					.image(20 + i * 45, 15, 'heart')
-					.setOrigin(0)
-					.setScale(0.65)
-			)
+		if (this.cursorKeys.left.isDown) {
+			this.player.setVelocityX(-playerSpeed)
+			this.player.setFlipX(true)
+			this.player.rotation = 0
+		} else if (this.cursorKeys.right.isDown) {
+			this.player.setVelocityX(playerSpeed)
+			this.player.setFlipX(false)
+			this.player.rotation = 0
+		}
+
+		if (this.cursorKeys.up.isDown) {
+			this.player.setVelocityY(-playerSpeed)
+			this.player.rotation = -Math.PI / 2
+			this.player.setFlipX(false)
+		} else if (this.cursorKeys.down.isDown) {
+			this.player.rotation = Math.PI / 2
+			this.player.setVelocityY(playerSpeed)
+			this.player.setFlipX(false)
 		}
 	}
 
@@ -308,74 +514,6 @@ class PlayScene extends BaseScene {
 		this.timeLeft -= delta
 
 		this.timeLeftText.setText(Math.floor(Math.max(0, this.timeLeft / 1000)))
-	}
-
-	updateChickens() {
-		const { chickensMoving, chickenSpeed } = this.levels[this.currentLevel]
-		if (!chickensMoving) {
-			return
-		}
-
-		this.chickens.forEach((chicken, i) => {
-			if (chicken.body.velocity.x == 0) {
-				chicken.setVelocityX(this.getRandomItem([-chickenSpeed, chickenSpeed]))
-			}
-
-			if (chicken.getBounds().left <= 0) {
-				chicken.setVelocityX(chickenSpeed)
-			} else if (chicken.getBounds().right >= this.config.width) {
-				chicken.setVelocityX(-chickenSpeed)
-			}
-
-			chicken.setFlipX(chicken.body.velocity.x > 0)
-		})
-	}
-
-	updatePot(delta) {
-		this.potVarChangeTimePassed += delta
-		if (this.potDisplayingResult) {
-			if (this.potResultDisplayTimePassed >= 350) {
-				this.pot.setTexture('emptyPot').setScale(1)
-				this.potDisplayingResult = false
-				this.potResultDisplayTimePassed = 0
-				this.overlaps.forEach(ol => (ol.active = true))
-			}
-			this.potResultDisplayTimePassed += delta
-		}
-
-		const { potSpeed, potVarChangeRange, potVariables } = this.levels[this.currentLevel]
-		if (this.potVarChangeTimePassed >= this.potVarChangeTimeGap) {
-			this.potVariable.setText(this.getRandomItem(potVariables))
-			this.potVarChangeTimeGap = Phaser.Math.Between(...potVarChangeRange)
-			this.potVarChangeTimePassed = 0
-		}
-
-		if (this.cursorKeys.left.isDown && this.pot.getBounds().left > 0) {
-			this.pot.x -= potSpeed
-			this.potVariable.x -= potSpeed
-		} else if (this.cursorKeys.right.isDown && this.pot.getBounds().right < this.config.width) {
-			this.pot.x += potSpeed
-			this.potVariable.x += potSpeed
-		}
-	}
-
-	updateEggs(delta) {
-		this.eggs.forEach(({ egg, eggText, overlap, markedForRemove }, i, eggs) => {
-			eggText.text.setPosition(egg.getCenter().x, egg.getCenter().y)
-			if (egg.getBounds().bottom >= this.config.height - 10) {
-				if (!markedForRemove) {
-					this.markEggForRemove(i, 1000, overlap)
-					this.setBrokenEgg(egg)
-
-					const { text } = this.potVariable
-					if (eggText.type == text || (eggText.type == 'char' && text == 'string')) {
-						this.lives.pop()?.destroy()
-					}
-				} else {
-					eggs[i].timePassed += delta
-				}
-			}
-		})
 	}
 
 	updateDelayText(delta) {
@@ -395,81 +533,49 @@ class PlayScene extends BaseScene {
 		}
 	}
 
+	checkOpenMenu() {
+		const acce = 200
+		const speed = 250
+		const { x, y } = this.input.mousePointer
+		const isInMenu =
+			x > this.config.width - this.menuExpandWidth - 50 &&
+			x < this.config.width &&
+			y > 100 &&
+			y < this.config.height
+
+		if (isInMenu) {
+			this.pauseBtn.setVelocityX(-speed).setAccelerationX(acce)
+			this.restartBtn.setVelocityX(-speed).setAccelerationX(acce)
+			this.quitBtn.setVelocityX(-speed).setAccelerationX(acce)
+		} else {
+			this.pauseBtn.setVelocityX(speed).setAccelerationX(-acce)
+			this.restartBtn.setVelocityX(speed).setAccelerationX(-acce)
+			this.quitBtn.setVelocityX(speed).setAccelerationX(-acce)
+		}
+
+		if (
+			(this.pauseBtn.getBounds().centerX <= this.config.width - this.menuExpandWidth && isInMenu) ||
+			(this.pauseBtn.getBounds().centerX >= this.config.width && !isInMenu)
+		) {
+			this.pauseBtn.setVelocityX(0).setAccelerationX(0)
+			this.restartBtn.setVelocityX(0).setAccelerationX(0)
+			this.quitBtn.setVelocityX(0).setAccelerationX(0)
+		}
+	}
+
 	checkGameStatus() {
-		if (this.lives.length == 0) {
-			this.physics.pause()
-			this.scene.pause().launch('FinishScene', { win: false, level: this.currentLevel })
-			// this.scene.restart({ level: this.currentLevel, showIns: false })
-		} else if (this.timeLeft <= 0) {
+		const { size, wallSize } = this.levels[this.currentLevel]
+
+		const totalWidth = wallSize.length * size + wallSize.width
+		const marginTop = (this.config.height - totalWidth) / 2
+
+		if (this.player.getBounds().bottom > this.config.height - marginTop + 20) {
 			this.physics.pause()
 			this.scene.pause().launch('FinishScene', { win: true, level: this.currentLevel })
-			// this.scene.restart({ level: this.currentLevel + 1 })
+		} else if (this.timeLeft <= 0) {
+			this.physics.pause()
+			this.scene.pause().launch('FinishScene', { win: false, level: this.currentLevel })
 		}
-	}
-
-	getEggValue() {
-		const { potVariables } = this.levels[this.currentLevel]
-		const type = this.getRandomItem(potVariables)
-		var content
-		var size = 20
-
-		switch (type) {
-			case 'int':
-				content = Math.floor(Math.random() * 500) + 1
-				break
-			case 'bool':
-				content = this.getRandomItem(['true', 'false'])
-				size = 18.5
-				break
-			case 'float':
-				content = (Math.random() * 500).toFixed(2)
-				size = 16.5
-				break
-			case 'char':
-				content = this.getRandomItem('abcdefghijklmnopqrstuvwxyz')
-				size = 22.5
-				break
-			case 'string':
-				const length = Phaser.Math.Between(2, 4)
-				content = ''
-				for (let i = 0; i < length; i++) {
-					content += this.getRandomItem('abcdefghijklmnopqrstuvwxyz')
-				}
-				if (content == 'true') {
-					const randI = Phaser.Math.Between(0, 3)
-					content = content.slice(0, randI) + content.slice(randI + 1)
-				}
-				size = 19
-				break
-			default:
-				return
-		}
-
-		return { content, type, size }
-	}
-
-	setBrokenEgg(egg) {
-		egg.setTexture('brokenEgg')
-		egg.body.gravity.y = 0
-		egg.body.velocity.y = 0
-	}
-
-	markEggForRemove(index, timeNeedToRemove, overlap) {
-		overlap.destroy()
-		this.eggs[index].timeNeedToRemove = timeNeedToRemove
-		this.eggs[index].markedForRemove = true
-	}
-
-	removeUnusedEggs() {
-		this.eggs.filter(({ egg, eggText, timePassed, timeNeedToRemove }) => {
-			if (timeNeedToRemove != null && timePassed >= timeNeedToRemove) {
-				egg.destroy()
-				eggText.text.destroy()
-				return false
-			}
-
-			return true
-		})
 	}
 
 	setDelayText(newText) {

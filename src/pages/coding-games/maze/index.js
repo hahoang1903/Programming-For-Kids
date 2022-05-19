@@ -1,5 +1,5 @@
 import React, { useRef } from 'react'
-import ChickenLoader from '../../../components/loaders/chicken-loader'
+import MazeLoader from '../../../components/loaders/maze-loader'
 import { useLoadGame } from '../../../hook/useLoadGame'
 import { config } from '../../../phaser/games/maze'
 
@@ -9,7 +9,7 @@ const MazeGamePage = () => {
 
 	return (
 		<>
-			{loading ? <ChickenLoader /> : null}
+			{loading ? <MazeLoader /> : null}
 			<div id="game-canvas" ref={canvasRef}></div>
 		</>
 	)

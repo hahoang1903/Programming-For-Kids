@@ -59,7 +59,7 @@ class FinishScene extends BaseScene {
 			})
 
 		const advanceBtn = this.add
-			.image(this.center.x + buttonSize + padding, this.buttonY, 'greenPlayBtn')
+			.image(this.center.x + buttonSize + padding, this.buttonY, 'playBtn')
 			.setOrigin(0.5)
 			.setScale(scale)
 			.setInteractive({ cursor: 'pointer' })

@@ -4,16 +4,12 @@ class MenuScene extends BaseScene {
 	constructor() {
 		super('MenuScene')
 
-		this.title = null
-		this.titleSpeedY = 60
-		this.titleInitialPos = {
-			x: this.center.x,
-			y: this.config.height / 3
-		}
-		this.titleBounceRange = { upper: this.titleInitialPos.y - 35, lower: this.titleInitialPos.y }
-
 		this.menu = null
 		this.levelMenu = null
+		this.pacman = null
+		this.startX = 370
+
+		this.pacmanSpeedX = 150
 	}
 
 	create() {
@@ -25,10 +21,12 @@ class MenuScene extends BaseScene {
 	}
 
 	update() {
-		if (this.title.y <= this.titleBounceRange.upper) {
-			this.title.body.velocity.y = this.titleSpeedY
-		} else if (this.title.y >= this.titleBounceRange.lower) {
-			this.title.body.velocity.y = -this.titleSpeedY
+		if (this.pacman.x <= this.startX) {
+			this.pacman.body.velocity.x = this.pacmanSpeedX
+			this.pacman.flipX = false
+		} else if (this.pacman.x >= 530) {
+			this.pacman.body.velocity.x = -this.pacmanSpeedX
+			this.pacman.flipX = true
 		}
 	}
 
@@ -58,8 +56,14 @@ class MenuScene extends BaseScene {
 	}
 
 	createTitle() {
-		this.title = this.physics.add.sprite(this.titleInitialPos.x, this.titleInitialPos.y, 'title')
-		this.title.body.velocity.y = -this.titleSpeedY
+		this.anims.create({
+			key: 'eat',
+			frames: this.anims.generateFrameNumbers('player', { start: 0, end: 2 }),
+			frameRate: 6,
+			repeat: -1
+		})
+
+		this.pacman = this.physics.add.sprite(370, 125, 'player').setOrigin(0.5).setScale(1).play('eat')
 	}
 
 	createMenu() {
@@ -125,7 +129,7 @@ class MenuScene extends BaseScene {
 
 		const levels = 3
 		const padding = 60
-		const titles = ['Con số', 'Chuỗi ký tự', 'Tổng hợp']
+		const titles = ['Dễ', 'Vừa', 'Khó']
 
 		for (let i = 1; i <= levels; i++) {
 			this.levelMenu.addMultiple(

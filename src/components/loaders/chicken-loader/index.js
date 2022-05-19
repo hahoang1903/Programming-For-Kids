@@ -2,8 +2,8 @@ import React from 'react'
 
 const ChickenLoader = () => {
 	return (
-		<div className="chicken-loader">
-			<div className="chicken-loader__image">
+		<div className="loader loader--chicken">
+			<div className="loader--chicken__image">
 				<div></div>
 				<div></div>
 				<div></div>

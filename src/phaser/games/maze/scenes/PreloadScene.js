@@ -30,13 +30,6 @@ class PreloadScene extends Phaser.Scene {
 		this.load.image('winScr', '/assets/maze/winScr.png')
 		this.load.image('loseScr', '/assets/maze/loseScr.png')
 
-		// this.load.image('ins_1-1', '/assets/maze/ins_1-1.png')
-		// this.load.image('ins_1-2', '/assets/maze/ins_1-2.png')
-		// this.load.image('ins_1-3', '/assets/maze/ins_1-3.png')
-		// this.load.image('ins_1-4', '/assets/maze/ins_1-4.png')
-		// this.load.image('ins_1-5', '/assets/maze/ins_1-5.png')
-		// this.load.image('ins_1-6', '/assets/maze/ins_1-6.png')
-
 		this.load.image('woodBoard', '/assets/general/woodBoard.png')
 
 		this.load.audio('maze-music', '/assets/maze/maze-music.mp3')

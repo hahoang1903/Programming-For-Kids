@@ -99,8 +99,8 @@ class PlayScene extends BaseScene {
 			{
 				text: [
 					'Ở một khu vui chơi giải trí thể thao mạo hiểm',
-					'không cho phép người khuyết tật được vào để đảm bảo an toàn',
-					'Phi bị cận, Phi sẽ được ?'
+					'không cho phép người khuyết tật được vào để đảm',
+					'bảo an toàn. Phi bị cận, Phi sẽ được?'
 				],
 				options: ['A. Cho vào', 'B. Không cho vào', 'C. Đuổi về'],
 				answer: 0
@@ -132,9 +132,10 @@ class PlayScene extends BaseScene {
 			{
 				text: [
 					'Nhà nước quy định ai nhiều hơn hoặc bằng 80 tuổi',
-					'thì sẽ được tham gia vào hội những người cao tuổi của đất nước',
-					'Ông Quý sinh năm 1967, năm nay là năm 2022',
-					'Vậy ông Quý có được phép tham gia vào hội người cao tuổi ?'
+					'thì sẽ được tham gia vào hội những người cao tuổi',
+					'của đất nước. Ông Quý sinh năm 1967, năm nay',
+					'là năm 2022. Vậy ông Quý có được phép tham gia',
+					'vào hội người cao tuổi không?'
 				],
 				options: ['A. Không', 'B. Có', 'C. Ông Quý quá già để tham gia hội người cao tuổi'],
 				answer: 0
@@ -142,9 +143,9 @@ class PlayScene extends BaseScene {
 			{
 				text: [
 					'Sinh ra từ năm 1997 đến 2012 sẽ được gọi là gen Z',
-					'Sinh ra từ năm 1981 đến 1996 thì sẽ được gọi là gen Y',
-					'Sinh ra từ năm 1965 đến 1980 sẽ được gọi là gen X',
-					'Năm nay là năm 2022, Phi đã 35 tuổi thì Phi sẽ được gọi là ?'
+					'Sinh ra từ năm 1981 đến 1996 thì được gọi là gen Y',
+					'Sinh ra từ năm 1965 đến 1980 được gọi là gen X',
+					'Năm nay là 2022, Phi đã 35 tuổi, Phi sẽ được gọi là?'
 				],
 				options: ['A. Gen Z', 'B. Gen Y', 'C. Gen X'],
 				answer: 1
